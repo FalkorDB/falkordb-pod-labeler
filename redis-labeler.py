@@ -111,19 +111,14 @@ def get_redis_master_pod_name(redis_host, sentinel_port, cluster_name):
         check=True,
     )
 
-    logging.debug(f"FQDN: {result_2.stdout.decode('utf-8')}")
+    fqdn = str(result_2.stdout.decode("utf-8")).strip()
+    logging.debug(f"FQDN: {fqdn}")
 
-    result_3 = subprocess.run(
-        ["grep", "-E", "^([^.]+)"],
-        input=result_2.stdout,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        check=True,
-    )
+    pod_name = fqdn.split(".")[0]
 
-    logging.debug(f"Master pod: {result_3.stdout.decode('utf-8')}")
+    logging.debug(f"Master pod: {pod_name}")
 
-    return str(result_3.stdout.decode("utf-8"))
+    return pod_name
 
 
 def get_redis_pods(k8s_api):
