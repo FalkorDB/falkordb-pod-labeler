@@ -77,10 +77,11 @@ def get_redis_master_pod_name(redis_host, sentinel_port, cluster_name):
                 password,
                 "--no-auth-warning",
                 "sentinel",
-                "get-master-addr-by-name",
+                "master",
                 cluster_name,
             ],
             stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             check=True,
         )
     else:
@@ -96,15 +97,17 @@ def get_redis_master_pod_name(redis_host, sentinel_port, cluster_name):
                 cluster_name,
             ],
             stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             check=True,
         )
 
-        logging.debug(f"Result: {result_1.stdout.decode('utf-8')}")
+    logging.debug(f"Result: {result_1.stdout.decode('utf-8')}")
 
     result_2 = subprocess.run(
         ["sed", "-n", "4p"],
         input=result_1.stdout,
         stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         check=True,
     )
 
