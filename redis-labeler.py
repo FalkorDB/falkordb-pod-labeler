@@ -239,4 +239,3 @@ while True:
         time.sleep(int(args.sleep_seconds))
     except Exception as e:
         logging.error(f"Error: {e}")
-        time.sleep(999999)
