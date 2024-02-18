@@ -99,16 +99,22 @@ def get_redis_master_pod_name(redis_host, sentinel_port, cluster_name):
             check=True,
         )
 
+        logging.debug(f"Result: {result_1.stdout.decode('utf-8')}")
+
     result_2 = subprocess.run(
         ["sed", "-n", "4p"],
         input=result_1.stdout,
         stdout=subprocess.PIPE,
         check=True,
     )
+
+    logging.debug(f"FQDN: {result_2.stdout.decode('utf-8')}")
+
     result_3 = subprocess.run(
         ["grep", "-E", "^([^.]+)"],
         input=result_2.stdout,
         stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         check=True,
     )
 
@@ -229,6 +235,10 @@ if args.skip_tls_verify:
 v1Api = client.CoreV1Api()
 
 while True:
-    find_redis_and_label(v1Api)
-    logging.info(f"Sleeping {args.sleep_seconds}...")
-    time.sleep(int(args.sleep_seconds))
+    try:
+        find_redis_and_label(v1Api)
+        logging.info(f"Sleeping {args.sleep_seconds}...")
+        time.sleep(int(args.sleep_seconds))
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        time.sleep(999999)
