@@ -11,7 +11,7 @@ A simple python script to find the redis pods in Kubernetes for the given labels
 
 `sed -n 4p` - used to get the FQDN from the above command
 
-`grep -oP "^([^.]+)"` - used to get the pod name from the FQDN
+`grep -E "^([^.]+)"` - used to get the pod name from the FQDN
 
 Those pods updated with the labels `{domain}/role=master`, `{domain}/role=slave` accordingly.
 

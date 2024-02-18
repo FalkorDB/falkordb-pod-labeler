@@ -106,7 +106,7 @@ def get_redis_master_pod_name(redis_host, sentinel_port, cluster_name):
         check=True,
     )
     result_3 = subprocess.run(
-        ["grep", "-oP", "^([^.]+)"],
+        ["grep", "-E", "^([^.]+)"],
         input=result_2.stdout,
         stdout=subprocess.PIPE,
         check=True,
