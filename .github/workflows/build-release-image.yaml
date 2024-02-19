@@ -28,4 +28,4 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: dudizimber/redis-pod-labeler
+          tags: FalkorDB/redis-pod-labeler
