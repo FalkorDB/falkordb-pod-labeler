@@ -1,18 +1,4 @@
-#!/usr/bin/python3
 
-# Copyright 2019 Redmart Pte Ltd.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 import argparse
 import logging
@@ -161,20 +147,20 @@ parser = argparse.ArgumentParser(
     description="Checking redis pods and labelling them with master/ slave accordingly"
 )
 parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False)
-parser.add_argument("--namespace", dest="namespace", required=False, default="redis")
+parser.add_argument("--namespace", dest="namespace", required=False, default="falkordb")
 parser.add_argument(
     "--pod-selector",
     dest="pod_selector",
-    default="app.kubernetes.io/app=redis",
+    default="app.kubernetes.io/instance=falkordb",
     required=False,
 )
-parser.add_argument("--redis-cluster-name", dest="cluster_name", default="mymaster")
-parser.add_argument("--redis-headless-svc-name", dest="headless_name", required=True)
+parser.add_argument("--falkordb-cluster-name", dest="cluster_name", default="mymaster")
+parser.add_argument("--falkordb-headless-svc-name", dest="headless_name", required=True)
 parser.add_argument(
-    "--redis-sentinel_port", dest="sentinel_port", default=26379, required=False
+    "--falkordb-sentinel_port", dest="sentinel_port", default=26379, required=False
 )
 parser.add_argument(
-    "--redis-password-name", dest="password_name", default="REDIS_MASTER_PASSWORD"
+    "--falkordb-password-name", dest="password_name", default="FALKORDB_MASTER_PASSWORD"
 )
 parser.add_argument(
     "--cluster-domain",
@@ -183,7 +169,7 @@ parser.add_argument(
     required=False,
 )
 parser.add_argument(
-    "--company-domain", dest="domain", default="redis.io", required=False
+    "--company-domain", dest="domain", default="falkordb.com", required=False
 )
 parser.add_argument("--config-file", dest="config_file", required=False)
 parser.add_argument(

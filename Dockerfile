@@ -11,9 +11,13 @@ RUN echo "**** install Python ****" && \
     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 
 RUN apk add --no-cache redis bind-tools
-RUN pip3 install kubernetes redis
-COPY ./redis-labeler.py .
+
+COPY ./requirements.txt .
+
+RUN pip3 install -r requirements.txt
+
+COPY ./falkordb-labeler.py .
 
 ENTRYPOINT [ "python3" ]
 
-CMD ["./redis-labeler.py"]
+CMD ["./falkordb-labeler.py"]
