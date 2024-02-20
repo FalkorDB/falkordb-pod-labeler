@@ -1,11 +1,11 @@
-# redis-pod-labeler
+# falkordb-pod-labeler
 
-Docker image for find and label the redis pods in a kubernetes cluster according to the role (master, slave) 
+Docker image for find and label the falkordb pods in a kubernetes cluster according to the role (master, slave) 
 
-[Docker Image Link](https://hub.docker.com/repository/docker/dudizimber/redis-pod-labeler)
+[Docker Image Link](https://hub.docker.com/repository/docker/falkordb/falkordb-pod-labeler)
 
 ## Description
-A simple python script to find the redis pods in Kubernetes for the given labels and label them according to the rule.
+A simple python script to find the falkordb pods in Kubernetes for the given labels and label them according to the rule.
 
 `redis-cli -h redis-ha.redis -p 26379 sentinel master mymaster` - used to get the redis master service details
 
