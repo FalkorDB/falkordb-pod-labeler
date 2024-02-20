@@ -2,6 +2,8 @@ name: Build and release image
 
 on:
   push:
+    tags:
+      - v*
     branches:
       - main
   workflow_dispatch:
@@ -28,4 +30,4 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: dudizimber/redis-pod-labeler
+          tags: FalkorDB/falkordb-pod-labeler:${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/v') && github.ref || 'edge'}}, FalkorDB/falkordb-pod-labeler:latest
