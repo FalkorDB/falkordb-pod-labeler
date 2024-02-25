@@ -1,5 +1,3 @@
-
-
 import argparse
 import logging
 import subprocess
@@ -11,10 +9,10 @@ from kubernetes import config, client
 DEFAULT_CLUSTER_DOMAIN = "cluster.local"
 
 
-def find_redis_and_label(k8s_api):
+def find_falkordb_and_label(k8s_api):
 
     # Get all pods
-    pods = get_redis_pods(
+    pods = get_falkordb_pods(
         k8s_api,
     )
 
@@ -24,7 +22,7 @@ def find_redis_and_label(k8s_api):
 
     # Get master from sentinel
     sentinel_host = f"{args.headless_name}.{args.namespace}.svc.{args.cluster_domain}"
-    master = get_redis_master_pod_name(
+    master = get_falkordb_master_pod_name(
         sentinel_host, args.sentinel_port, args.cluster_name
     )
 
@@ -40,23 +38,25 @@ def find_redis_and_label(k8s_api):
     for pod, role in pods_with_roles:
         label = generate_pod_label_body(role, args.domain)
         if not args.dry_run:
-            label_redis_pods(k8s_api, pod, label)
+            label_falkordb_pods(k8s_api, pod, label)
         else:
             logging.info("Would apply label '%s' to %s", role, pod)
 
 
-def get_redis_master_pod_name(redis_host, sentinel_port, cluster_name):
+def get_falkordb_master_pod_name(falkordb_host, sentinel_port, cluster_name):
     logging.debug(
-        f"Getting master pod for redis {redis_host}:{sentinel_port} {cluster_name}"
+        f"Getting master pod for falkordb {falkordb_host}:{sentinel_port} {cluster_name}"
     )
     password = os.getenv(args.password_name)
     result_1 = ""
     if password is not None:
         result_1 = subprocess.run(
             [
+                "timeout",
+                args.sleep_seconds,
                 "redis-cli",
                 "-h",
-                redis_host,
+                falkordb_host,
                 "-p",
                 str(sentinel_port),
                 "-a",
@@ -73,9 +73,11 @@ def get_redis_master_pod_name(redis_host, sentinel_port, cluster_name):
     else:
         result_1 = subprocess.run(
             [
+                "timeout",
+                args.sleep_seconds,
                 "redis-cli",
                 "-h",
-                redis_host,
+                falkordb_host,
                 "-p",
                 str(sentinel_port),
                 "sentinel",
@@ -107,7 +109,7 @@ def get_redis_master_pod_name(redis_host, sentinel_port, cluster_name):
     return pod_name
 
 
-def get_redis_pods(k8s_api):
+def get_falkordb_pods(k8s_api):
     # List pods in namespace
     logging.debug(
         f"Getting pods with selector {args.pod_selector} in namespace {args.namespace}"
@@ -127,7 +129,7 @@ def get_redis_pods(k8s_api):
     return pods_names
 
 
-def label_redis_pods(k8s_api, pod_name, label):
+def label_falkordb_pods(k8s_api, pod_name, label):
     logging.info(f"applying label '{label}' to {pod_name}")
     return k8s_api.patch_namespaced_pod(
         name=pod_name, namespace="{}".format(args.namespace), body=label
@@ -144,7 +146,7 @@ def generate_pod_label_body(label, domain):
 
 
 parser = argparse.ArgumentParser(
-    description="Checking redis pods and labelling them with master/ slave accordingly"
+    description="Checking falkordb pods and labelling them with master/ slave accordingly"
 )
 parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False)
 parser.add_argument("--namespace", dest="namespace", required=False, default="falkordb")
@@ -199,7 +201,7 @@ logging.basicConfig(
 )
 
 logging.captureWarnings(True)
-logging.info("Starting redis replica labeler...")
+logging.info("Starting falkordb replica labeler...")
 logging.info(f"Dry run: {args.dry_run}")
 
 if args.config_file is None:
@@ -220,7 +222,7 @@ v1Api = client.CoreV1Api()
 
 while True:
     try:
-        find_redis_and_label(v1Api)
+        find_falkordb_and_label(v1Api)
         logging.info(f"Sleeping {args.sleep_seconds}...")
         time.sleep(int(args.sleep_seconds))
     except Exception as e:
